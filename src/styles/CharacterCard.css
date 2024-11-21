@@ -1,0 +1,29 @@
+
+.cards-container {
+  list-style-type: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  padding: 25px;
+}
+
+.cards-list.hide {
+  display: none;
+}
+
+.card {
+  animation: scale-cards 0.3s; 
+}
+
+.card:hover {
+  transform: scale(1.07);
+}
+@keyframes scale-cards {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
