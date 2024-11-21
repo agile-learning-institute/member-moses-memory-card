@@ -1,50 +1,55 @@
-# React + TypeScript + Vite
+# Bible Character Memory Game  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a memory card game built using React and TypeScript. It allows users to test their memory by matching pairs of Bible characters.  
 
-Currently, two official plugins are available:
+## Table of Contents  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Installation](#setup--install)  
+- [Running](#Run)  
+- [Features](#features)  
+- [Contributing](#contributing)  
+- [License](#license)  
+- [Acknowledgements](#acknowledgements)  
 
-## Expanding the ESLint configuration
+## Setup & Install  
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+To get started with the project, clone the repository and install the dependencies:  
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+git clone https://git@github.com:agile-learning-institute/member-moses-memory-card.git   
+cd member-moses-memory-card  
+npm install  
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Run  
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+To run and test it:  
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm run dev   
 ```
+
+Open your browser and navigate to `http://localhost:3000` to see the application in action.  
+
+Checkout a [live preview here](https://bible-characters-game.netlify.app/)  
+
+## Features
+
+- Interactive memory card game  
+- Dynamic character cards  
+- Responsive design  
+- Score tracking  
+
+## Contributing  
+
+Contributions are welcome! Please fork the repository and create a pull request with your changes.  
+
+## License  
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.  
+
+## Acknowledgements  
+
+- React documentation  
+- TypeScript documentation    
+- Open-source libraries, tools and resources  
