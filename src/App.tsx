@@ -12,7 +12,7 @@ import gameCharacters from './GameCharacters';
 
 function App() {
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState<boolean>(true);
 
   return (
     <>

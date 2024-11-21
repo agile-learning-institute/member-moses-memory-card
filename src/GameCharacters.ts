@@ -1,6 +1,15 @@
 import { v4 as uuidv4 } from "uuid";
 
-const gameCharacters = [
+interface GameCharacter {
+    charName: string;
+    book: string;
+    imageUrl: string;
+    hasClicked: boolean;
+    isActive: boolean;
+    id: string;
+  }
+
+const gameCharacters: GameCharacter[] = [
   {
     charName: "Joshua",
     book: "Joshua",

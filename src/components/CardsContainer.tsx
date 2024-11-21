@@ -3,10 +3,12 @@ import '../styles/CharacterCard.css';
 import CharacterCard from './CharacterCard';
 
 interface Character {
-  id: string;
-  charName: string;
-  book: string;
-  imageUrl: string;
+    charName: string;
+    book: string;
+    imageUrl: string;
+    hasClicked: boolean;
+    isActive: boolean;
+    id: string;
 }
 
 interface CardsContainerProps {
