@@ -14,21 +14,24 @@ interface CardsContainerProps {
 }
 
 function CardsContainer({ gameCharacters }: CardsContainerProps) {
+
+    const firstTen = gameCharacters.slice(0, 10);
+
   return (
-      <Box
-        component="ul"
-        sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', p: 0, m: 0 }}
-      >
-        {gameCharacters.map((character) => (
-          <CharacterCard
-            key={character.id}
-            id={character.id}
-            charName={character.charName}
-            book={character.book}
-            imageUrl={character.imageUrl}
-          />
-        ))}
-      </Box>
+    <Box
+      component="ul"
+      sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', p: 0, m: 0 }}
+    >
+      {firstTen.map((character) => (
+        <CharacterCard
+          key={character.id}
+          id={character.id}
+          charName={character.charName}
+          book={character.book}
+          imageUrl={character.imageUrl}
+        />
+      ))}
+    </Box>
   );
 }
 
