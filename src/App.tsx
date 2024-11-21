@@ -6,7 +6,9 @@ import ModalDialog from '@mui/joy/ModalDialog';
 import Typography from '@mui/joy/Typography';
 import { useState } from 'react';
 import { Divider } from '@mui/material';
-import CharacterCard from './components/CharacterCard';
+// import CharacterCard from './components/CharacterCard';
+import CardsContainer from './components/CardsContainer';
+import gameCharacters from './GameCharacters';
 
 function App() {
 
@@ -46,18 +48,17 @@ function App() {
         </h1>
 
         <div className="score-container">
-          <div className="current-score">
+          <Button variant="soft" size="lg">
             Current score: 7 {/* currentScore */}
-          </div>
-          <div className="best-score">
+          </Button>
+          <Button variant="solid" size="lg">
             Best score: 8 {/* bestScore */}
-          </div>
+          </Button>
         </div>
         <><br /></>
         <Divider />
         <><br /></>
-        {/* <CardsContainer /> */}
-        <CharacterCard id='test123' charName={"Gideon"} book={"Judges"} imageUrl={"https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320"}/>
+        <CardsContainer gameCharacters={gameCharacters}/>
       </main>
     </div>
     </>

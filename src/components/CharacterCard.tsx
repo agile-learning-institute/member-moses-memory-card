@@ -14,7 +14,7 @@ interface CharacterCardProps {
 
 function CharacterCard({id, charName, book, imageUrl}: CharacterCardProps) {
   return (
-    <Card sx={{ minHeight: '280px', width: 200 }} id={id} key={id} className="card">
+    <Card sx={{ minHeight: '220px', width: 200 }} id={id} key={id} className="card">
       <CardCover>
         <img
           src={imageUrl}
