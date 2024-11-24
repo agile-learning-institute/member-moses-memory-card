@@ -23,15 +23,15 @@ function App() {
 
   const handleCardClick = (id: string) => {
     if (clickedCards.includes(id)) {
-      alert('Game Over! You clicked the same card twice.');
+      alert(`Ooops! You already clicked on ${gameCharacters.find((character) => character.id === id)?.charName}! Game Over!!`);
       setClickedCards([]);
       setCurrentScore(0);
       setOpen(true);
     } else {
       setClickedCards([...clickedCards, id]);
       setCurrentScore(currentScore + 1);
-      if (clickedCards.length + 1 === 10) {
-        alert('Congratulations! You won!');
+      if (clickedCards.length + 1 === gameCharacters.length) {
+        alert('Ta-daaaaa! You are a memory Guru!');
         setClickedCards([]);
         setCurrentScore(0);
         setOpen(true);
@@ -84,6 +84,14 @@ function App() {
           <Divider />
           <><br /></>
           <GameControl gameCharacters={gameCharacters} onCardClick={handleCardClick} />
+          <><br /></>
+          <Divider />
+          <><br /></>
+          <footer className='footer'>
+            <Typography level="title-md" textColor="#9a5b13" textAlign="center">
+              © {new Date().getFullYear()} WodPachua
+            </Typography> 
+          </footer>
         </main>
       </div>
     </>

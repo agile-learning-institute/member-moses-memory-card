@@ -18,13 +18,10 @@ interface CardsContainerProps {
 
 function CardsContainer({ gameCharacters, handleCardSelection }: CardsContainerProps) {
 
-
-  // const firstTen = gameCharacters.slice(0, 10);
-
   return (
     <Box
       component="ul"
-      sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', p: 0, m: 0 }}
+      sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', p: 0, m: 0, justifyContent: 'space-around' }}
     >
       {gameCharacters.map((character) => (
         <CharacterCard
