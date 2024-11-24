@@ -8,12 +8,14 @@ import { useState, useEffect } from 'react';
 import { Divider } from '@mui/material';
 import gameCharacters from './GameCharacters';
 import GameControl from './components/GameControl';
+import Announce from './components/Announce';
 
 function App() {
   const [open, setOpen] = useState<boolean>(true);
   const [clickedCards, setClickedCards] = useState<string[]>([]);
   const [currentScore, setCurrentScore] = useState<number>(0);
   const [bestScore, setBestScore] = useState<number>(0);
+  const [announce, setAnnounce] = useState<{ charName: string; result: 'success' | 'danger' } | null>(null);
 
   useEffect(() => {
     if (currentScore > bestScore) {
@@ -23,18 +25,25 @@ function App() {
 
   const handleCardClick = (id: string) => {
     if (clickedCards.includes(id)) {
-      alert(`Ooops! You already clicked on ${gameCharacters.find((character) => character.id === id)?.charName}! Game Over!!`);
-      setClickedCards([]);
-      setCurrentScore(0);
-      setOpen(true);
+      const repeatedCard = gameCharacters.find((character) => character.id === id)?.charName || '';
+      setAnnounce({ charName: repeatedCard, result: 'danger' });
+      setTimeout(() => {
+        setAnnounce(null);
+        setClickedCards([]);
+        setCurrentScore(0);
+        setOpen(true);
+      }, 3000);
     } else {
       setClickedCards([...clickedCards, id]);
       setCurrentScore(currentScore + 1);
       if (clickedCards.length + 1 === gameCharacters.length) {
-        alert('Ta-daaaaa! You are a memory Guru!');
-        setClickedCards([]);
-        setCurrentScore(0);
-        setOpen(true);
+        setAnnounce({ charName: '', result: 'success' });
+        setTimeout(() => {
+          setAnnounce(null);
+          setClickedCards([]);
+          setCurrentScore(0);
+          setOpen(true);
+        }, 3000);
       }
     }
   };
@@ -93,6 +102,15 @@ function App() {
             </Typography> 
           </footer>
         </main>
+        {announce && (
+          <div className="announce-container">
+            <Announce
+              charName={announce.charName}
+              result={announce.result}
+              onClose={() => setAnnounce(null)}
+            />
+          </div>
+        )}
       </div>
     </>
   )
