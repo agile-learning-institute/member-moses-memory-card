@@ -48,6 +48,7 @@ function App() {
       <div className="App">
         <Modal open={open} onClose={() => setOpen(true)}>
           <ModalDialog
+            className="intro-modal"
             aria-labelledby="nested-modal-title"
             aria-describedby="nested-modal-description"
             sx={(theme) => ({
