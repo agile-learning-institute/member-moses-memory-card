@@ -10,11 +10,12 @@ interface CharacterCardProps {
   charName: string;
   book: string;
   imageUrl: string;
+  handleCardSelection: (id: string) => void;
 }
 
-function CharacterCard({id, charName, book, imageUrl}: CharacterCardProps) {
+function CharacterCard({id, charName, book, imageUrl, handleCardSelection}: CharacterCardProps) {
   return (
-    <Card sx={{ minHeight: '220px', width: 200 }} id={id} key={id} className="card">
+    <Card sx={{ minHeight: '220px', width: 200 }} id={id} key={id} className="card" onClick={() => handleCardSelection(id)}>
       <CardCover>
         <img
           src={imageUrl}
