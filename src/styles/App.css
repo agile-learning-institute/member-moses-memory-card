@@ -60,9 +60,10 @@
 
 .announce-container {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1000;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50000;
 }
 
 @media (max-width: 600px) {

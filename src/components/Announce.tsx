@@ -6,6 +6,7 @@ import Typography from '@mui/joy/Typography';
 import Check from '@mui/icons-material/Check';
 import Close from '@mui/icons-material/Close';
 import { Warning } from '@mui/icons-material';
+import { useEffect } from 'react';
 
 interface AnnounceProps {
   charName: string;
@@ -13,7 +14,12 @@ interface AnnounceProps {
   onClose: () => void;
 }
 
-export default function Announce({ charName, result, onClose }: AnnounceProps) {
+export default function AnnounceColors({ charName, result, onClose }: AnnounceProps) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 5000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
   return (
     <Alert
       size="lg"

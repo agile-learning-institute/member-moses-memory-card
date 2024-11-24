@@ -24,26 +24,21 @@ function App() {
   }, [currentScore, bestScore]);
 
   const handleCardClick = (id: string) => {
+    
     if (clickedCards.includes(id)) {
       const repeatedCard = gameCharacters.find((character) => character.id === id)?.charName || '';
+      setClickedCards([]);
+      setCurrentScore(0);
+      setOpen(true);
       setAnnounce({ charName: repeatedCard, result: 'danger' });
-      setTimeout(() => {
-        setAnnounce(null);
-        setClickedCards([]);
-        setCurrentScore(0);
-        setOpen(true);
-      }, 3000);
     } else {
       setClickedCards([...clickedCards, id]);
       setCurrentScore(currentScore + 1);
       if (clickedCards.length + 1 === gameCharacters.length) {
+        setClickedCards([]);
+        setCurrentScore(0);
+        setOpen(true);
         setAnnounce({ charName: '', result: 'success' });
-        setTimeout(() => {
-          setAnnounce(null);
-          setClickedCards([]);
-          setCurrentScore(0);
-          setOpen(true);
-        }, 3000);
       }
     }
   };
