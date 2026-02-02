@@ -9,6 +9,7 @@ import { Divider } from '@mui/material';
 import gameCharacters from './GameCharacters';
 import GameControl from './components/GameControl';
 import Announce from './components/Announce';
+import { blue } from '@mui/material/colors';
 
 function App() {
   const [open, setOpen] = useState<boolean>(true);
@@ -66,6 +67,9 @@ function App() {
             <img src={logo} alt="logo" className="logo" />
             <Typography id="Intro-text" level="h1" textAlign='center'>
               Bible Character Memory Game
+            </Typography>
+            <Typography level="h4" textAlign='center' textColor={'gray'}>
+              Test Your Memory, Don't Click the Same Character Twice!
             </Typography>
             <Button color="warning" size="lg" onClick={() => setOpen(false)} variant="outlined">Click to Play</Button>
           </ModalDialog>
