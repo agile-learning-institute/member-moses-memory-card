@@ -9,7 +9,6 @@ import { Divider } from '@mui/material';
 import gameCharacters from './GameCharacters';
 import GameControl from './components/GameControl';
 import Announce from './components/Announce';
-import { blue } from '@mui/material/colors';
 
 function App() {
   const [open, setOpen] = useState<boolean>(true);
