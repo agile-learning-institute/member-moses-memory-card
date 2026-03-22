@@ -67,6 +67,9 @@ function App() {
             <Typography id="Intro-text" level="h1" textAlign='center'>
               Bible Character Memory Game
             </Typography>
+            <Typography level="h4" textAlign='center' textColor={'gray'}>
+              Test Your Memory, Don't Click the Same Character Twice!
+            </Typography>
             <Button color="warning" size="lg" onClick={() => setOpen(false)} variant="outlined">Click to Play</Button>
           </ModalDialog>
         </Modal>
