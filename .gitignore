@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -23,6 +22,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-=======
-node_modules
->>>>>>> main
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
+.terraform.lock.hcl
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+id_ed25519*
