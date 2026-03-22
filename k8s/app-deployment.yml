@@ -19,6 +19,7 @@ spec:
         # Main app container - nginx serving the React build
         - name: memory-card-app
           image: 391821045179.dkr.ecr.eu-north-1.amazonaws.com/wodpachua/utamu-assignment:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           resources:
@@ -55,4 +56,3 @@ spec:
             limits:
               cpu: 50m
               memory: 20Mi
-          imagePullPolicy: Always
