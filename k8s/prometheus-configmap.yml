@@ -17,29 +17,10 @@ data:
         static_configs:
           - targets: ['localhost:9090']
 
-      - job_name: nginx-exporter
-        metrics_path: /metrics
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names: ['memory-card']
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            regex: memory-card-service
-            action: keep
-          - source_labels: [__meta_kubernetes_endpoint_port_name]
-            regex: metrics
-            action: keep
-
       - job_name: node-exporter
-        kubernetes_sd_configs:
-          - role: endpoints
-            namespaces:
-              names: ['monitoring']
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
-            regex: node-exporter
-            action: keep
-          - source_labels: [__meta_kubernetes_endpoint_port_name]
-            regex: metrics
-            action: keep
+        static_configs:
+          - targets: ['node-exporter.monitoring:9100']
+
+      - job_name: nginx-exporter
+        static_configs:
+          - targets: ['memory-card-service.memory-card:9113']
