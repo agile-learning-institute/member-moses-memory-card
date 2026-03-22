@@ -36,3 +36,5 @@ dist-ssr
 *.key
 id_rsa*
 id_ed25519*
+
+*.md
