@@ -40,6 +40,20 @@ Checkout a [live preview here](https://bible-characters-game.netlify.app/)
 - Responsive design  
 - Score tracking  
 
+## CI/CD
+
+Pushes to `main` run GitHub Actions to test, build, push the Docker image to ECR, and redeploy the container on EC2. Configure these repository secrets and variables:
+
+- `AWS_ROLE_ARN` – IAM role for GitHub OIDC
+- `AWS_REGION` – AWS region for ECR/EC2
+- `ECR_REGISTRY` – ECR registry (e.g., `123456789012.dkr.ecr.us-east-1.amazonaws.com`)
+- `ECR_REPOSITORY` – ECR repo name (e.g., `member-moses-memory-card`)
+- `EC2_HOST` – public hostname/IP
+- `EC2_USER` – SSH user
+- `EC2_SSH_KEY` – private key for SSH (PEM contents)
+- `EC2_PORT` *(optional)* – SSH port, defaults to 22
+- `CONTAINER_NAME` *(optional)* – container name, defaults to `memory-card-app`
+
 ## Contributing  
 
 Contributions are welcome! Please fork the repository and create a pull request with your changes.  
