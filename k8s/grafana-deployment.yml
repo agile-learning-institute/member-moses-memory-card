@@ -22,7 +22,7 @@ spec:
             - containerPort: 3000
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "admin"
+              value: "MemCard@K3s2026"
             - name: GF_USERS_ALLOW_SIGN_UP
               value: "false"
             - name: GF_ALERTING_ENABLED
