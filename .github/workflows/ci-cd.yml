@@ -3,10 +3,8 @@ name: CI/CD
 on:
   push:
     branches: ["main"]
-
-permissions:
-  contents: read
-  id-token: write
+  pull_request:
+    branches: ["main"]
 
 jobs:
   test:
@@ -15,23 +13,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "pnpm"
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: true
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         run: pnpm test
 
+      - name: Build
+        run: pnpm run build
+
   build-and-push:
     runs-on: ubuntu-latest
     needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
       ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
       ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -43,46 +48,56 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-north-1
 
       - name: Login to Amazon ECR
-        id: ecr-login
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build image
+      - name: Build and push Docker image
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-
-      - name: Push image
-        run: |
+          docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-push
-    env:
-      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      IMAGE_TAG: ${{ github.sha }}
-      CONTAINER_NAME: ${{ secrets.CONTAINER_NAME || 'memory-card-app' }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: SSH to EC2 and deploy
+      - name: Deploy to K3s via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_PORT || 22 }}
           script: |
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY
-            docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-            docker stop $CONTAINER_NAME || true
-            docker rm $CONTAINER_NAME || true
-            docker run -d --name $CONTAINER_NAME -p 80:80 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            # Refresh ECR credentials for K3s
+            PASSWORD=$(aws ecr get-login-password --region eu-north-1)
+            ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+            ECR_URI="${ACCOUNT_ID}.dkr.ecr.eu-north-1.amazonaws.com"
+
+            sudo tee /etc/rancher/k3s/registries.yaml > /dev/null <<EOF
+            mirrors:
+              "${ECR_URI}":
+                endpoint:
+                  - "https://${ECR_URI}"
+            configs:
+              "${ECR_URI}":
+                auth:
+                  username: AWS
+                  password: "${PASSWORD}"
+            EOF
+
+            sudo systemctl restart k3s
+            sleep 15
+
+            # Update deployment with new image
+            sudo kubectl set image deployment/memory-card-app \
+              memory-card-app=${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} \
+              -n memory-card
+
+            # Wait for rollout
+            sudo kubectl rollout status deployment/memory-card-app -n memory-card --timeout=120s
