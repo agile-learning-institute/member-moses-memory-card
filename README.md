@@ -1,44 +1,166 @@
-# Bible Character Memory Game  
+# Bible Character Memory Game
 
-This project is a memory card game built using React and TypeScript. It allows users to test their memory by matching pairs of Bible characters.  
+A memory card game built with React and TypeScript, deployed on AWS using K3s, Terraform, and GitHub Actions CI/CD.
 
-## Table of Contents  
+**Live Preview:** [bible-characters-game.netlify.app](https://bible-characters-game.netlify.app/)
 
-- [Installation](#setup--install)  
-- [Running](#Run)  
-- [Features](#features)  
-- [Contributing](#contributing)  
-- [License](#license)  
-- [Acknowledgements](#acknowledgements)  
+## Architecture
 
-## Setup & Install  
-
-To get started with the project, clone the repository and install the dependencies:  
-
-```bash
-git clone https://git@github.com:agile-learning-institute/member-moses-memory-card.git   
-cd member-moses-memory-card  
-npm install  
+```
+                    GitHub Actions CI/CD
+                    ┌──────────────────────┐
+                    │  Build → Push → SSH  │
+                    └──────────┬───────────┘
+                               │
+                    ┌──────────▼───────────┐
+                    │   Amazon ECR          │
+                    │   (Docker Registry)   │
+                    └──────────┬───────────┘
+                               │
+         ┌─────────────────────▼─────────────────────┐
+         │          AWS EC2 (t3.micro)                │
+         │          K3s Kubernetes Cluster            │
+         │                                           │
+         │  ┌─────────────────────────────────────┐  │
+         │  │  memory-card namespace              │  │
+         │  │  ┌─────────────┐ ┌───────────────┐  │  │
+         │  │  │ Nginx (App) │ │ Nginx Exporter│  │  │
+         │  │  │   :30080    │ │   :9113       │  │  │
+         │  │  └─────────────┘ └───────────────┘  │  │
+         │  └─────────────────────────────────────┘  │
+         │                                           │
+         │  ┌─────────────────────────────────────┐  │
+         │  │  monitoring namespace               │  │
+         │  │  ┌────────────┐  ┌──────────────┐   │  │
+         │  │  │ Prometheus │  │   Grafana     │   │  │
+         │  │  │   :30090   │  │   :30030      │   │  │
+         │  │  └────────────┘  └──────────────┘   │  │
+         │  │  ┌──────────────┐                   │  │
+         │  │  │Node Exporter │                   │  │
+         │  │  │   :9100      │                   │  │
+         │  │  └──────────────┘                   │  │
+         │  └─────────────────────────────────────┘  │
+         └───────────────────────────────────────────┘
 ```
 
-## Run  
+## Tech Stack
 
-To run and test it:  
+| Layer | Technology |
+|-------|-----------|
+| Application | React 18, TypeScript, Vite |
+| Containerization | Docker (multi-stage: Node 20 build, Nginx serve) |
+| Orchestration | K3s (lightweight Kubernetes) |
+| Infrastructure | Terraform on AWS Free Tier |
+| CI/CD | GitHub Actions (build, push, deploy) |
+| Monitoring | Prometheus + Grafana |
+| Registry | Amazon ECR |
+
+## Setup & Install
 
 ```bash
-npm run dev   
+git clone https://github.com/agile-learning-institute/member-moses-memory-card.git
+cd member-moses-memory-card
+pnpm install
 ```
 
-Open your browser and navigate to `http://localhost:3000` to see the application in action.  
+## Development
 
-Checkout a [live preview here](https://bible-characters-game.netlify.app/)  
+```bash
+pnpm run dev       # Start dev server at http://localhost:3000
+pnpm run build     # Production build
+pnpm run test      # Run tests
+pnpm run lint      # Lint code
+```
+
+## Docker
+
+```bash
+docker build -t memory-card-game .
+docker run -p 8080:80 memory-card-game
+# Visit http://localhost:8080
+```
+
+## Cloud Deployment
+
+### Prerequisites
+- AWS account with Free Tier
+- Terraform installed
+- AWS CLI configured (`aws configure`)
+- SSH key pair (`ssh-keygen -t ed25519 -f ~/.ssh/k3s-key`)
+
+### 1. Provision Infrastructure
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with your values
+terraform init
+terraform plan
+terraform apply
+```
+
+### 2. Deploy to K3s
+```bash
+# Push Docker image to ECR
+aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin <ECR_URL>
+docker build -t <ECR_URL>:latest .
+docker push <ECR_URL>:latest
+
+# SSH into EC2 and apply manifests
+ssh -i ~/.ssh/k3s-key ec2-user@<EC2_IP>
+kubectl apply -f k8s/namespace.yml
+kubectl apply -f k8s/app-deployment.yml
+kubectl apply -f k8s/app-service.yml
+```
+
+### 3. Deploy Monitoring
+```bash
+kubectl apply -f k8s/monitoring-namespace.yml
+kubectl apply -f k8s/prometheus-configmap.yml
+kubectl apply -f k8s/prometheus-deployment.yml
+kubectl apply -f k8s/prometheus-service.yml
+kubectl apply -f k8s/node-exporter-daemonset.yml
+kubectl apply -f k8s/grafana-deployment.yml
+kubectl apply -f k8s/grafana-service.yml
+```
+
+### Access URLs
+| Service | URL |
+|---------|-----|
+| Memory Card Game | `http://<EC2_IP>:30080` |
+| Prometheus | `http://<EC2_IP>:30090` |
+| Grafana | `http://<EC2_IP>:30030` (admin/MemCard@K3s2026) |
+
+## Design Decisions
+
+| Decision | Reason |
+|----------|--------|
+| **K3s** over full Kubernetes | Lightweight, runs on t3.micro with 1GB RAM |
+| **NodePort** over Ingress | Saves ~100MB RAM by not running Traefik |
+| **1GB swap file** | Safety net against out-of-memory on small instance |
+| **6h Prometheus retention** | Keeps storage and memory usage low |
+| **SSH-based CI/CD deploy** | Simpler and more secure than exposing K3s API |
+
+## Project Structure
+
+```
+.github/workflows/     # CI/CD pipeline
+terraform/             # Infrastructure as Code (AWS)
+k8s/                   # Kubernetes manifests
+scripts/               # Deployment scripts
+src/                   # React application source
+  components/          # React components
+  styles/              # CSS styles
+  __tests__/           # Unit tests
+```
 
 ## Features
 
-- Interactive memory card game  
-- Dynamic character cards  
-- Responsive design  
-- Score tracking  
+- Interactive memory card game with Bible characters
+- Dynamic character cards with score tracking
+- Responsive design
+- Automated CI/CD pipeline
+- Infrastructure as Code
+- Monitoring and observability
 
 ## CI/CD
 
@@ -56,14 +178,15 @@ Pushes to `main` run GitHub Actions to test, build, push the Docker image to ECR
 
 ## Contributing  
 
-Contributions are welcome! Please fork the repository and create a pull request with your changes.  
+Contributions are welcome! Fork the repository and create a pull request.
 
-## License  
+## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.  
+MIT License. See [LICENSE](LICENSE) for details.
 
-## Acknowledgements  
+## Acknowledgements
 
-- React documentation  
-- TypeScript documentation    
-- Open-source libraries, tools and resources  
+- React and TypeScript documentation
+- Kubernetes and K3s documentation
+- Terraform AWS provider documentation
+- Open-source libraries and tools
