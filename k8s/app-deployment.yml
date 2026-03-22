@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memory-card-app
+  namespace: memory-card
+  labels:
+    app: memory-card-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: memory-card-app
+  template:
+    metadata:
+      labels:
+        app: memory-card-app
+    spec:
+      containers:
+        # Main app container - nginx serving the React build
+        - name: memory-card-app
+          image: 391821045179.dkr.ecr.eu-north-1.amazonaws.com/wodpachua/utamu-assignment:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+        # Sidecar - nginx prometheus exporter for metrics
+        - name: nginx-exporter
+          image: nginx/nginx-prometheus-exporter:1.1.0
+          args:
+            - "-nginx.scrape-uri=http://localhost/nginx_status"
+          ports:
+            - containerPort: 9113
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 50m
+              memory: 20Mi
+      imagePullPolicy: Always
