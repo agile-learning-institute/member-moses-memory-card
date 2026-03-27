@@ -178,7 +178,7 @@ Pushes to `main` run GitHub Actions to test, build, push the Docker image to ECR
 
 ## Contributing  
 
-Contributions are welcome! Fork the repository and create a pull request.
+Contributions are welcome! Fork the repository and create a pull request...
 
 ## License
 
